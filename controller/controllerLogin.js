@@ -19,6 +19,14 @@ const LoginGoogle=async(req,res)=>{
         const {email,name,sub} = payload;
         const accout = await modelUser.findOne({googleId:sub});
         const accessToken = await createToken({email,name},'15m','accessToken')
+        const refreshToken = await createToken({email,name},'1d','refreshToken')
+        res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,  // 🔒 chặn JS truy cập cookie
+        secure: true,    // 🔒 chỉ gửi qua HTTPS (khi deploy)
+        sameSite: 'strict', // chống CSRF
+        path: '/',       // cookie dùng toàn site
+        maxAge: 1 * 24 * 60 * 60 * 1000 
+         });
         if(!accout){
             await modelUser.create({
                 name:name,
