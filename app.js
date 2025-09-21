@@ -28,11 +28,7 @@ app.use('/users', usersRouter);
 app.use(function (req, res, next) {
   next(createError(404));
 });
-app.use(cors({
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], 
-    allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+app.use(cors());
 // error handler
 app.use(function (err, req, res, next) {
   // set locals, only providing error in development
