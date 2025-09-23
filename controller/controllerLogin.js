@@ -1,6 +1,8 @@
 require('dotenv').config();
 const modelUser= require('../model/modelUsers')
+const token = require("../helps/token")
 const {OAuth2Client} = require('google-auth-library')
+const bcrypt =require('bcrypt')
 const client_id = process.env.CLIENT_ID;
 const client = new OAuth2Client(client_id);
 const createToken = require('../helps/token')
@@ -45,4 +47,33 @@ const LoginGoogle=async(req,res)=>{
         console.log(error)
     }
 }
-module.exports = LoginGoogle
+const Login = async(req,res)=>{
+    try {
+        const { phone, password } = req.body;
+        const users = await modelUser.findOne({phone})
+        if(!users){
+             return res.status(404).json({
+                message: 'Phone does not exist',
+            });
+        }
+        const isPassword = await bcrypt.compare(password,users.password)
+        if(!isPassword){
+             return res.status(404).json({
+                message: 'Wrong password',
+            });
+        }
+        const newToken = await token({phone},'15m','accessToken')
+        return res.status(200).json({
+            accessToken:newToken,
+            data:{name:users.name}
+        })
+    } catch (error) {
+        return res.status(500).json({
+            message:error
+        })
+    }
+}
+module.exports = {
+    LoginGoogle,
+    Login
+}
