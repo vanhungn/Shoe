@@ -7,6 +7,8 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 router.get('/refreshToken',RefreshToken)
+router.get('/sendOTP/:phone',LoginGoogle.SendOtp)
 router.post('/loginGoogle',LoginGoogle.LoginGoogle)
 router.post('/login',LoginGoogle.Login)
+
 module.exports = router;

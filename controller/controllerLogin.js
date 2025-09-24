@@ -1,11 +1,13 @@
 require('dotenv').config();
 const modelUser= require('../model/modelUsers')
 const token = require("../helps/token")
+const Send = require('../helps/sendOtp')
 const {OAuth2Client} = require('google-auth-library')
 const bcrypt =require('bcrypt')
 const client_id = process.env.CLIENT_ID;
 const client = new OAuth2Client(client_id);
-const createToken = require('../helps/token')
+const createToken = require('../helps/token');
+const ToE164 = require('../helps/transformPhone');
 const verifyToken=async(token)=>{
     const ticket = await client.verifyIdToken({
         idToken:token,
@@ -73,7 +75,28 @@ const Login = async(req,res)=>{
         })
     }
 }
+const SendOtp = async(req,res)=>{
+    try {
+        const  {phone} =  req.params;
+        if(!phone) {
+            return res.status(400).json({
+                message:'phone is not exit'
+            })
+        }
+        const ToE164Phone = await ToE164(phone)
+         const otp = Math.floor(1000 + Math.random() * 9000);
+        await Send(ToE164Phone, `Your OTP code is: ${otp}`)
+        return res.status(200).json({
+            message:'Send otp success'
+        })
+    } catch (error) {
+       return res.status(500).json({
+            message:error
+        }) 
+    }
+}
 module.exports = {
     LoginGoogle,
-    Login
+    Login,
+    SendOtp
 }
