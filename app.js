@@ -13,6 +13,7 @@ const db = require('./config/config.js');
 db();
 
 // 🌟 Bật CORS toàn cục ngay sau khởi tạo app
+
 app.use(cors({
   origin: 'http://localhost:5173', // hoặc '*' nếu không dùng credentials
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],

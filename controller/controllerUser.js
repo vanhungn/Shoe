@@ -3,10 +3,9 @@ const bcrypt = require('bcrypt')
 const CreateUser=async(req,res)=>{
     try {
         const {name,phone,email,password}= req.body
-        const checkPhoneEndEmail = await modelUsers.findOne({$or: [{ phone }, { email }]})
-        if(checkPhoneEndEmail){
-           return res.status(300).json({
-                message:"Phone or email incorrect"
+        if(!name || !phone || !email || !password){
+            return res.status(400).json({
+                message:"Information is missing"
             })
         }
         const salt = bcrypt.genSaltSync(10);

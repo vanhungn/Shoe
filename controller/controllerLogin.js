@@ -8,6 +8,8 @@ const client_id = process.env.CLIENT_ID;
 const client = new OAuth2Client(client_id);
 const createToken = require('../helps/token');
 const ToE164 = require('../helps/transformPhone');
+const redisClient =require("../helps/redisClient");
+const modelUsers = require('../model/modelUsers');
 const verifyToken=async(token)=>{
     const ticket = await client.verifyIdToken({
         idToken:token,
@@ -77,14 +79,21 @@ const Login = async(req,res)=>{
 }
 const SendOtp = async(req,res)=>{
     try {
-        const  {phone} =  req.params;
-        if(!phone) {
+        const  {phone,email} =  req.params;
+        if(!phone || !email) {
             return res.status(400).json({
-                message:'phone is not exit'
+                message:'phone or email is not exit'
             })
         }
+         const checkPhoneEndEmail = await modelUsers.findOne({$or: [{ phone }, { email }]})
+                if(checkPhoneEndEmail){
+                   return res.status(300).json({
+                        message:"Phone or email incorrect"
+                    })
+        }
         const ToE164Phone = await ToE164(phone)
-         const otp = Math.floor(1000 + Math.random() * 9000);
+        const otp = Math.floor(1000 + Math.random() * 9000);
+        await redisClient.setEx(`otp:${phone}`, 180, otp.toString());
         await Send(ToE164Phone, `Your OTP code is: ${otp}`)
         return res.status(200).json({
             message:'Send otp success'
