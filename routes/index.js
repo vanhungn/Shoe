@@ -9,7 +9,7 @@ router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' });
 });
 router.get('/refreshToken', RefreshToken)
-router.get('/sendOTP/:phone/:email', LoginGoogle.SendOtp)
+router.post('/sendOTP', LoginGoogle.SendOtp)
 router.post('/loginGoogle', LoginGoogle.LoginGoogle)
 router.post('/login', LoginGoogle.Login)
 router.post('/verifyOtp', VerifyOtp)

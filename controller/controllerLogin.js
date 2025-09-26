@@ -79,7 +79,7 @@ const Login = async(req,res)=>{
 }
 const SendOtp = async(req,res)=>{
     try {
-        const  {phone,email} =  req.params;
+        const  {phone,email} =  req.body;
         if(!phone || !email) {
             return res.status(400).json({
                 message:'phone or email is not exist'
