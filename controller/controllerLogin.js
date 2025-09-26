@@ -82,14 +82,8 @@ const SendOtp = async(req,res)=>{
         const  {phone,email} =  req.params;
         if(!phone || !email) {
             return res.status(400).json({
-                message:'phone or email is not exit'
+                message:'phone or email is not exist'
             })
-        }
-         const checkPhoneEndEmail = await modelUsers.findOne({$or: [{ phone }, { email }]})
-                if(checkPhoneEndEmail){
-                   return res.status(300).json({
-                        message:"Phone or email incorrect"
-                    })
         }
         const ToE164Phone = await ToE164(phone)
         const otp = Math.floor(1000 + Math.random() * 9000);
