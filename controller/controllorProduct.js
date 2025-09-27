@@ -1,23 +1,92 @@
 const modelProduct = require('../model/modelProduct')
-const createProduct=async(req,res)=>{
+const modelProductSales = require('../model/modelProductSalse')
+const createProduct = async (req, res) => {
     try {
         const data = req.body;
-    const creacte = new modelProduct({
-        typeOf:data.typeOf,
-        nameProduct:data.nameProduct,
-        price:data.price,
-        picture:data.picture,
-        sizeAndStock:data.sizeAndStock,
-        promote:data.promote,
-        
-    })
-    await creacte.save()
-    return res.status(200).json({
-        datas:creacte
-    })
+        if (
+            !data.typeOf ||
+            !data.nameProduct ||
+            !data.price ||
+            data.picture.length <= 0 ||
+            data.sizeAndStock.length <= 0 ||
+            !data.promote
+        ) {
+            return req.status(400).json({
+                message: "not is vail"
+            })
+        }
+        const creacte = new modelProduct({
+            typeOf: data.typeOf,
+            nameProduct: data.nameProduct,
+            price: data.price,
+            picture: data.picture,
+            sizeAndStock: data.sizeAndStock,
+            promote: data.promote,
+
+        })
+        await creacte.save()
+        return res.status(200).json({
+            datas: creacte
+        })
     } catch (error) {
         console.log(error)
     }
-    
+
 }
-module.exports = createProduct
+const CreateProductSales = async (req, res) => {
+    try {
+        const { img, title } = req.body;
+        if (!img || !title) {
+            return req.status(400).json({
+                message: "not is vail"
+            })
+        }
+        await modelProductSales.create({ img, title })
+        return res.status(200).json({
+            message: "success"
+        })
+    } catch (error) {
+        return res.status(500).json({
+            error
+        })
+    }
+}
+const GetProduct = async (req, res) => {
+    try {
+         const skipPage = parseInt(req.query.page) || 1;
+        const limitPage = parseInt(req.query.limit) || 10;
+        const lengthIssue = await modelProductSales.find({})
+        const totalPage = Math.ceil(lengthIssue.length / limitPage);
+        const data = await modelProduct.aggregate([{
+            $match: { promote: { $gt: 20 } },
+
+        },{ $skip: (skipPage - 1) * limitPage },
+        { $limit: limitPage },])
+        return res.status(200).json({
+            data,
+            totalPage
+        })
+    } catch (error) {
+        return res.status(500).json({ error })
+    }
+}
+const GetProductSale = async (req, res) => {
+    try {
+         const skipPage = parseInt(req.query.page) || 1;
+        const limitPage = parseInt(req.query.limit) || 10;
+        
+        const lengthIssue =  await modelProductSales.find({})
+        const totalPage = Math.ceil(lengthIssue.length / limitPage);
+        const data = await modelProductSales.aggregate([{
+            $match: {},
+        }, { $skip: (skipPage - 1) * limitPage },
+        { $limit: limitPage },])
+        return res.status(200).json({
+            data,
+            totalPage
+        })
+    } catch (error) {
+        return res.status(500).json({ error })
+    }
+}
+module.exports = { createProduct, CreateProductSales, GetProduct, GetProductSale }

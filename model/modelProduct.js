@@ -10,5 +10,6 @@ const ProductSchemas= new Schemas({
         stock:Number,
     }],
     promote:Number,
+    desc: String,
 },{timestamps:true},{collection:'products'})
 module.exports = mongoose.model('products',ProductSchemas)
