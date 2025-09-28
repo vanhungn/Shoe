@@ -103,9 +103,9 @@ const sendEmail = async (req, res) => {
     try {
         const { email } = req.body
         const otp = Math.floor(1000 + Math.random() * 9000);
-
+        
         const mailOptions = {
-            from: process.env.USER_EMAIL,
+            from: 'vanhungnvh1712004@gmail.com',
             to: email,
             subject: "Your OTP Code",
             text: `Your OTP code is ${otp}. It will expire in 3 minutes.`,
