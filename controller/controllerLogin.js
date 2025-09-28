@@ -10,7 +10,8 @@ const createToken = require('../helps/token');
 const ToE164 = require('../helps/transformPhone');
 const redisClient = require("../helps/redisClient");
 const modelUsers = require('../model/modelUsers');
-const transporter = require('../helps/email')
+const axios = require("axios");
+
 const verifyToken = async (token) => {
     const ticket = await client.verifyIdToken({
         idToken: token,
@@ -104,20 +105,22 @@ const sendEmail = async (req, res) => {
         const { email } = req.body
         const otp = Math.floor(1000 + Math.random() * 9000);
         
-        const mailOptions = {
-            from: 'vanhungnvh1712004@gmail.com',
-            to: email,
-            subject: "Your OTP Code",
-            text: `Your OTP code is ${otp}. It will expire in 3 minutes.`,
-        };
-        await transporter.sendMail(mailOptions, function (error, response) {
-            if (error) {
-                console.log(error);
-                return res.status(404).json({
-                    message: 'Error when sending email',
-                });
-            }
-        })
+        await axios.post(
+      "https://api.brevo.com/v3/smtp/email",
+      {
+        sender: { email: "vanhungnvh1712004@gmail.com" }, // email đã verify trong Brevo
+        to: [{ email }],
+        subject: "Your OTP Code",
+        textContent: `Your OTP code is ${otp}. It will expire in 3 minutes.`,
+      },
+      {
+        headers: {
+          "accept": "application/json",
+          "api-key": process.env.BREVO_API_KEY,
+          "content-type": "application/json",
+        },
+      }
+    );
         await redisClient.setEx(`otp:${email}`, 180, otp.toString());
         return res.status(200).json({
             message: 'Email has been sent',

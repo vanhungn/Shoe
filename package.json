@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-sns": "^3.462.0",
+    "axios": "^1.12.2",
     "bcrypt": "^6.0.0",
     "body-parser": "^2.2.0",
     "cookie-parser": "~1.4.4",
@@ -27,6 +28,7 @@
     "multer": "^2.0.2",
     "nodemailer": "^7.0.6",
     "nodemailer-mailgun-transport": "^2.1.5",
+    "nodemailer-sendinblue-transport": "^2.0.1",
     "nodemon": "^3.1.10",
     "react-hot-toast": "^2.6.0",
     "redis": "^5.8.2"
