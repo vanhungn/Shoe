@@ -25,7 +25,7 @@ const LoginGoogle = async (req, res) => {
         const { token } = req.body;
         const payload = await verifyToken(token)
         const { email, name, sub } = payload;
-        const accout = await modelUser.findOne({ googleId: sub });
+        let accout = await modelUser.findOne({ googleId: sub });
         const accessToken = await createToken({ email, name }, '15m', 'accessToken')
         const refreshToken = await createToken({ email, name }, '1d', 'refreshToken')
         res.cookie('refreshToken', refreshToken, {
@@ -36,7 +36,7 @@ const LoginGoogle = async (req, res) => {
             maxAge: 1 * 24 * 60 * 60 * 1000
         });
         if (!accout) {
-            await modelUser.create({
+          accout=  await modelUser.create({
                 name: name,
                 phone: "",
                 gender: "",
@@ -47,7 +47,8 @@ const LoginGoogle = async (req, res) => {
         }
         return res.status(200).json({
             message: "success",
-            accessToken
+            accessToken,
+            data: { name: accout.name ,id:accout._id} 
         })
     } catch (error) {
         console.log(error)
@@ -69,9 +70,16 @@ const Login = async (req, res) => {
             });
         }
         const newToken = await token({ phone }, '15m', 'accessToken')
+         res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,  // 🔒 chặn JS truy cập cookie
+            secure: true,    // 🔒 chỉ gửi qua HTTPS (khi deploy)
+            sameSite: 'strict', // chống CSRF
+            path: '/',       // cookie dùng toàn site
+            maxAge: 1 * 24 * 60 * 60 * 1000
+        });
         return res.status(200).json({
             accessToken: newToken,
-            data: { name: users.name }
+            data: { name: users.name ,id:users._id}
         })
     } catch (error) {
         return res.status(500).json({
