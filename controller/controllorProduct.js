@@ -9,7 +9,8 @@ const createProduct = async (req, res) => {
             !data.price ||
             data.picture.length <= 0 ||
             data.sizeAndStock.length <= 0 ||
-            !data.promote
+            !data.promote,
+            !data.sold
         ) {
             return req.status(400).json({
                 message: "not is vail"
@@ -22,7 +23,7 @@ const createProduct = async (req, res) => {
             picture: data.picture,
             sizeAndStock: data.sizeAndStock,
             promote: data.promote,
-
+            sold: data.sold
         })
         await creacte.save()
         return res.status(200).json({
@@ -53,14 +54,21 @@ const CreateProductSales = async (req, res) => {
 }
 const GetProduct = async (req, res) => {
     try {
-         const skipPage = parseInt(req.query.page) || 1;
+        const sold =  parseInt(req.query.sold)
+        const discount = parseInt(req.query.discount);
+        const skipPage = parseInt(req.query.page) || 1;
         const limitPage = parseInt(req.query.limit) || 10;
         const lengthIssue = await modelProductSales.find({})
         const totalPage = Math.ceil(lengthIssue.length / limitPage);
         const data = await modelProduct.aggregate([{
-            $match: { promote: { $gt: 20 } },
+            $match: { ...(discount && {promote: { $gte: discount === 'null'?null : discount }}),
+            ...(sold && {sold: { $gte: sold === 'null'?null : sold }})
+        
+        },
 
-        },{ $skip: (skipPage - 1) * limitPage },
+        },{
+                $sort: { createdAt: -1 },
+            }, { $skip: (skipPage - 1) * limitPage },
         { $limit: limitPage },])
         return res.status(200).json({
             data,
@@ -72,14 +80,16 @@ const GetProduct = async (req, res) => {
 }
 const GetProductSale = async (req, res) => {
     try {
-         const skipPage = parseInt(req.query.page) || 1;
+        const skipPage = parseInt(req.query.page) || 1;
         const limitPage = parseInt(req.query.limit) || 10;
-        
-        const lengthIssue =  await modelProductSales.find({})
+
+        const lengthIssue = await modelProductSales.find({})
         const totalPage = Math.ceil(lengthIssue.length / limitPage);
         const data = await modelProductSales.aggregate([{
             $match: {},
-        }, { $skip: (skipPage - 1) * limitPage },
+        },{
+                $sort: { createdAt: -1 },
+            }, { $skip: (skipPage - 1) * limitPage },
         { $limit: limitPage },])
         return res.status(200).json({
             data,
