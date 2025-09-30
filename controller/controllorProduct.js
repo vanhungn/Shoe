@@ -60,8 +60,9 @@ const GetProduct = async (req, res) => {
         const limitPage = parseInt(req.query.limit) || 10;
         const lengthIssue = await modelProductSales.find({})
         const totalPage = Math.ceil(lengthIssue.length / limitPage);
+        const sale = discount === 30 ?{ $gte:  discount === 'null'?null : discount ,$lt : 50}: {$gte:  discount === 'null'?null : discount}
         const data = await modelProduct.aggregate([{
-            $match: { ...(discount && {promote: { $gte: discount === 'null'?null : discount }}),
+            $match: { ...(discount && {promote: sale}),
             ...(sold && {sold: { $gte: sold === 'null'?null : sold }})
         
         },
