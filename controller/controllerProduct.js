@@ -100,4 +100,21 @@ const GetProductSale = async (req, res) => {
         return res.status(500).json({ error })
     }
 }
-module.exports = { createProduct, CreateProductSales, GetProduct, GetProductSale }
+const GetProductDetail=async(req,res)=>{
+    try {
+        const id = req.params.id
+
+        if(!id){
+            return res.status(400).json({
+                message:"invite"
+            })
+        }
+        const detail = await modelProduct.findById({_id:id})
+        return res.status(200).json({
+            data:detail
+        })
+    } catch (error) {
+        return res.status(500).json({error})
+    }
+}
+module.exports = { createProduct, CreateProductSales, GetProduct, GetProductSale,GetProductDetail }

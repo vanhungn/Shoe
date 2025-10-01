@@ -17,4 +17,5 @@ router.post('/verifyOtp', VerifyOtp)
 router.post('/check',Check)
 router.post('/sendEmail',LoginGoogle.sendEmail)
 
+
 module.exports = router;
