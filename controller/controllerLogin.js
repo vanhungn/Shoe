@@ -36,7 +36,7 @@ const LoginGoogle = async (req, res) => {
             maxAge: 1 * 24 * 60 * 60 * 1000
         });
         if (!accout) {
-          accout=  await modelUser.create({
+            accout = await modelUser.create({
                 name: name,
                 phone: "",
                 gender: "",
@@ -48,7 +48,7 @@ const LoginGoogle = async (req, res) => {
         return res.status(200).json({
             message: "success",
             accessToken,
-            data: { name: accout.name ,id:accout._id} 
+            data: { name: accout.name, id: accout._id }
         })
     } catch (error) {
         console.log(error)
@@ -70,7 +70,9 @@ const Login = async (req, res) => {
             });
         }
         const newToken = await token({ id:users._id}, '15m', 'accessToken')
-         res.cookie('refreshToken', refreshToken, {
+         const refreshToken = await token({ id: users._id }, '7d', 'refreshToken');
+
+        res.cookie('refreshToken', refreshToken, {
             httpOnly: true,  // 🔒 chặn JS truy cập cookie
             secure: true,    // 🔒 chỉ gửi qua HTTPS (khi deploy)
             sameSite: 'strict', // chống CSRF
@@ -80,6 +82,7 @@ const Login = async (req, res) => {
         return res.status(200).json({
             accessToken: newToken,
             data: { name: users.name ,id:users._id}
+            
         })
     } catch (error) {
         return res.status(500).json({
@@ -112,23 +115,23 @@ const sendEmail = async (req, res) => {
     try {
         const { email } = req.body
         const otp = Math.floor(1000 + Math.random() * 9000);
-        
+
         await axios.post(
-      "https://api.brevo.com/v3/smtp/email",
-      {
-        sender: { email: "vanhungnvh1712004@gmail.com" }, // email đã verify trong Brevo
-        to: [{ email }],
-        subject: "Your OTP Code",
-        textContent: `Your OTP code is ${otp}. It will expire in 3 minutes.`,
-      },
-      {
-        headers: {
-          "accept": "application/json",
-          "api-key": process.env.BREVO_API_KEY,
-          "content-type": "application/json",
-        },
-      }
-    );
+            "https://api.brevo.com/v3/smtp/email",
+            {
+                sender: { email: "vanhungnvh1712004@gmail.com" }, // email đã verify trong Brevo
+                to: [{ email }],
+                subject: "Your OTP Code",
+                textContent: `Your OTP code is ${otp}. It will expire in 3 minutes.`,
+            },
+            {
+                headers: {
+                    "accept": "application/json",
+                    "api-key": process.env.BREVO_API_KEY,
+                    "content-type": "application/json",
+                },
+            }
+        );
         await redisClient.setEx(`otp:${email}`, 180, otp.toString());
         return res.status(200).json({
             message: 'Email has been sent',
