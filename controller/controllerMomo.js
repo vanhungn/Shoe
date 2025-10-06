@@ -2,18 +2,28 @@ const axios = require('axios');
 const crypto = require('crypto');
 
 const Momo = async (req, res) => {
-     try {
+    try {
+        const orders = req.body;
+        if (!orders || orders.length < 0) {
+            return res.status(400).json({
+                message: "invite"
+            })
+        }
+        const amounts = orders.reduce((a,b)=>a+b.totalPrice,0)
+        // Encode thành base64
+        const extraDatas = Buffer.from(JSON.stringify(orders)).toString("base64");
         const accessKey = "F8BBA842ECF85";
         const secretKey = "K951B6PE1waDMi640xX08PD3vg6EkVlz";
         const orderInfo = "pay with MoMo";
         const partnerCode = "MOMO";
-        const redirectUrl = "https://webhook.site/b3088a6a-2d17-4f8d-a383-71389a6c600b";
-        const ipnUrl = "https://webhook.site/b3088a6a-2d17-4f8d-a383-71389a6c600b";
+        const redirectUrl = "http://localhost:5173";
+        const ipnUrl = "https://shoe-122b.onrender.com/api/momo/notify";
         const requestType = "payWithMethod";
-        const amount = "50000";
+        const amount = amounts;
         const orderId = partnerCode + new Date().getTime();
         const requestId = orderId;
-        const extraData = "";
+
+        const extraData = extraDatas;
         const autoCapture = true;
         const lang = "vi";
 
@@ -69,5 +79,37 @@ const Momo = async (req, res) => {
         });
     }
 };
+const CreateOrder = async(req,res)=>{
+    try {
+         const { orderId, resultCode, transId, extraData } = req.body;
 
-module.exports = Momo;
+    if (resultCode === 0) {
+      const orders = JSON.parse(Buffer.from(extraData, "base64").toString("utf-8"));
+
+      await modelOrder.insertMany(
+        orders.map(item => ({
+          idUser: item.idUser,
+          quantity: item.quantity,
+          color: item.color,
+          size: item.size,
+          img: item.img,
+          totalPrice: item.totalPrice,
+          status: "Đã thanh toán",
+          address: item.address
+          
+        }))
+      );
+
+      console.log("✅ Orders created for orderId:", orderId);
+       } else {
+      console.log("❌ Payment failed for orderId:", orderId);
+    }
+
+    res.status(200).json({ message: "Received" });
+    } catch (error) {
+         return res.status(500).json({
+            error: error.message,
+        });
+    }
+}
+module.exports = {Momo,CreateOrder};

@@ -69,7 +69,7 @@ const Login = async (req, res) => {
                 message: 'Wrong password',
             });
         }
-        const newToken = await token({ phone }, '15m', 'accessToken')
+        const newToken = await token({ id:users._id}, '15m', 'accessToken')
          res.cookie('refreshToken', refreshToken, {
             httpOnly: true,  // 🔒 chặn JS truy cập cookie
             secure: true,    // 🔒 chỉ gửi qua HTTPS (khi deploy)
