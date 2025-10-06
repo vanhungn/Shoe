@@ -4,7 +4,7 @@ const LoginGoogle = require('../controller/controllerLogin')
 const RefreshToken = require('../middleware/refreshToken')
 const VerifyOtp = require('../middleware/verifyotp')
 const Check = require('../helps/checkPhoneEmail')
-
+const MoMo = require('../controller/controllerMomo')
 /* GET home page. */
 router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' });
@@ -14,8 +14,8 @@ router.post('/sendOTP', LoginGoogle.SendOtp)
 router.post('/loginGoogle', LoginGoogle.LoginGoogle)
 router.post('/login', LoginGoogle.Login)
 router.post('/verifyOtp', VerifyOtp)
-router.post('/check',Check)
-router.post('/sendEmail',LoginGoogle.sendEmail)
-
+router.post('/check', Check)
+router.post('/sendEmail', LoginGoogle.sendEmail)
+router.post('/api/momo/test', MoMo)
 
 module.exports = router;
