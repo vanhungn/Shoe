@@ -17,8 +17,8 @@ const Momo = async (req, res) => {
         const secretKey = "K951B6PE1waDMi640xX08PD3vg6EkVlz";
         const orderInfo = "pay with MoMo";
         const partnerCode = "MOMO";
-        const redirectUrl = "http://localhost:3000/api/momo/notify";
-        const ipnUrl = "http://localhost:3000/api/momo/notify";
+        const redirectUrl = "https://shoe-122b.onrender.com/api/momo/notify";
+        const ipnUrl = "https://shoe-122b.onrender.com/api/momo/notify";
         const requestType = "payWithMethod";
         const amount = amounts;
         const orderId = partnerCode + new Date().getTime();
