@@ -16,7 +16,7 @@ const Momo = async (req, res) => {
         const secretKey = "K951B6PE1waDMi640xX08PD3vg6EkVlz";
         const orderInfo = "pay with MoMo";
         const partnerCode = "MOMO";
-        const redirectUrl = "http://localhost:5173";
+        const redirectUrl = "https://shoe-122b.onrender.com/api/momo/notify";
         const ipnUrl = "https://shoe-122b.onrender.com/api/momo/notify";
         const requestType = "payWithMethod";
         const amount = amounts;
@@ -81,7 +81,7 @@ const Momo = async (req, res) => {
 };
 const CreateOrder = async(req,res)=>{
     try {
-         const { orderId, resultCode, transId, extraData } = req.body;
+         const { orderId, resultCode, transId, extraData } = req.query;
 
     if (resultCode === 0) {
       const orders = JSON.parse(Buffer.from(extraData, "base64").toString("utf-8"));
@@ -101,9 +101,9 @@ const CreateOrder = async(req,res)=>{
         }))
       );
 
-      console.log("✅ Orders created for orderId:", orderId);
+      console.log("Orders created for orderId:", orderId);
        } else {
-      console.log("❌ Payment failed for orderId:", orderId);
+      console.log("Payment failed for orderId:", orderId);
     }
 
     res.status(200).json({ message: "Received" });
