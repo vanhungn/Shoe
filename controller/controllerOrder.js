@@ -15,8 +15,9 @@ const CreateOrder = async (req, res) => {
             size: element.size,
             img: element.img,
             totalPrice: element.totalPrice,
-            status: element.status,
+            status: "Chưa thanh toán",
             address: element.address,
+            payment:element.payment
         })));
         return res.status(200).json({
             message: "Success"
