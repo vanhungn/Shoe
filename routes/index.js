@@ -5,6 +5,7 @@ const RefreshToken = require('../middleware/refreshToken')
 const VerifyOtp = require('../middleware/verifyotp')
 const Check = require('../helps/checkPhoneEmail')
 const MoMo = require('../controller/controllerMomo')
+const verifyToken = require("../middleware/auth")
 /* GET home page. */
 router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' });

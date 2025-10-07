@@ -95,7 +95,8 @@ const CreateOrder = async(req,res)=>{
           img: item.img,
           totalPrice: item.totalPrice,
           status: "Đã thanh toán",
-          address: item.address
+          address: item.address,
+          payment:item.payment
           
         }))
       );
