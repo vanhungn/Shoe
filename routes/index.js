@@ -17,7 +17,7 @@ router.post('/login', LoginGoogle.Login)
 router.post('/verifyOtp', VerifyOtp)
 router.post('/check', Check)
 router.post('/sendEmail', LoginGoogle.sendEmail)
-router.post('/api/momo/test', MoMo.Momo)
-router.get('/api/momo/notify',MoMo.CreateOrder)
+router.post('/api/momo/test',verifyToken, MoMo.Momo)
+router.get('/api/momo/notify',verifyToken,MoMo.CreateOrder)
 
 module.exports = router;
