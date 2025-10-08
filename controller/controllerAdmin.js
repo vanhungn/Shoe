@@ -1,6 +1,7 @@
 const modelUser = require("../model/modelUsers")
 const bcrypt = require('bcrypt')
 const token = require("../helps/token")
+
 const Login = async (req, res) => {
     try {
         const { phone, password } = req.body
@@ -78,6 +79,14 @@ const CreateUser = async (req, res) => {
                 message: "Information is missing"
             })
         }
+        const check = await modelUser.findOne({
+            $or: [{ phone }, { email }]
+        })
+        if (check) {
+            return res.status(401).json({
+                message: "Phone or email existed"
+            })
+        }
         const salt = bcrypt.genSaltSync(10);
         const hashPassWord = bcrypt.hashSync(password, salt);
         await modelUser.create({ name, phone, password: hashPassWord, email, role })
@@ -131,4 +140,35 @@ const DeleteUser = async (req, res) => {
         })
     }
 }
-module.exports = { Login, GetUsers, CreateUser, DetailUser, DeleteUser }
+const UpdateUser = async (req, res) => {
+    try {
+        const { _id } = req.query
+        const { name, phone, password, email, role } = req.body
+        if (!name || !phone || !email || !password || !role) {
+            return res.status(400).json({
+                message: "Information is missing"
+            })
+        }
+        
+        const data = await modelUser.findByIdAndUpdate({ _id: _id },
+            {
+                name, phone, password, email, role
+            }, { new: true }
+        )
+        return res.status(200).json({
+            message: "success",
+            data
+        })
+    } catch (error) {
+        return res.status(500).json({
+            error
+        })
+    }
+}
+module.exports = {
+    Login,
+    GetUsers,
+    CreateUser,
+    DetailUser,
+    DeleteUser, UpdateUser
+}
