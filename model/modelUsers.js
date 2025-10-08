@@ -5,7 +5,8 @@ const UseModels = new schemas({
     phone: String,
     password: String,
     googleId: String,
-    email: String
+    email: String,
+    role:String
 },
     { timestamps: true },
     { collection: "users" }

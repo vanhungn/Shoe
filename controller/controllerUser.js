@@ -10,7 +10,7 @@ const CreateUser=async(req,res)=>{
         }
         const salt = bcrypt.genSaltSync(10);
         const hashPassWord = bcrypt.hashSync(password, salt);
-            await modelUsers.create({name,phone,email,password:hashPassWord})
+            await modelUsers.create({name,phone,email,password:hashPassWord,role:"normal"})
         return res.status(200).json({
             message:"success"
         })
