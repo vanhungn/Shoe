@@ -38,4 +38,97 @@ const Login = async (req, res) => {
         return res.status(500).json(error)
     }
 }
-module.exports = {Login}
+const GetUsers = async (req, res) => {
+
+    try {
+        const skip = req.query.skip || 1
+        const limit = req.query.limit || 10
+        const search = req.query.search || ""
+        const query = {
+            $match: {
+                $or: [
+                    { name: { $regex: search, $options: "i" } },
+                    { phone: { $regex: search, $options: "i" } }
+                ]
+            }
+
+        };
+        const data = await modelUser.aggregate([query,
+            { $skip: (skip - 1) * limit },
+            { $limit: limit },
+            { $project: { password: 0 } },
+        ])
+        const lengthData = await modelUser.aggregate([query])
+        const total = Math.ceil(lengthData.length / limit)
+        return res.status(200).json({
+            data, total
+
+        })
+    } catch (error) {
+        return res.status(500).json({
+            error
+        })
+    }
+}
+const CreateUser = async (req, res) => {
+    try {
+        const { name, phone, password, email, role } = req.body
+        if (!name || !phone || !email || !password || !role) {
+            return res.status(400).json({
+                message: "Information is missing"
+            })
+        }
+        const salt = bcrypt.genSaltSync(10);
+        const hashPassWord = bcrypt.hashSync(password, salt);
+        await modelUser.create({ name, phone, password: hashPassWord, email, role })
+        return res.status(200).json({
+            message: "success"
+        })
+    } catch (error) {
+        return res.status(500).json({
+            error
+        })
+    }
+}
+const DetailUser = async (req, res) => {
+    try {
+        const { id } = req.params
+        if (!id) {
+            return res.status(400).json({
+                message: "Information is missing"
+            })
+        }
+        const detail = await modelUser.findById(id).select("-password")
+        return res.status(200).json({
+            detail
+        })
+    } catch (error) {
+        return res.status(500).json({
+            error
+        })
+    }
+}
+const DeleteUser = async (req, res) => {
+    try {
+        const { id } = req.params
+        if (!id) {
+            return res.status(400).json({
+                message: "Information is missing"
+            })
+        }
+        const issue = await modelUser.findByIdAndDelete({ _id: id });
+        if (!issue) {
+            return res.status(400).json({
+                message: 'Deleting issue failed',
+            });
+        }
+        return res.status(200).json({
+            message: "success"
+        })
+    } catch (error) {
+        return res.status(500).json({
+            error
+        })
+    }
+}
+module.exports = { Login, GetUsers, CreateUser, DetailUser, DeleteUser }
