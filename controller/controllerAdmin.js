@@ -83,7 +83,7 @@ const CreateUser = async (req, res) => {
             $or: [{ phone }, { email }]
         })
         if (check) {
-            return res.status(401).json({
+            return res.status(400).json({
                 message: "Phone or email existed"
             })
         }
@@ -149,7 +149,7 @@ const UpdateUser = async (req, res) => {
                 message: "Information is missing"
             })
         }
-        
+
         const data = await modelUser.findByIdAndUpdate({ _id: _id },
             {
                 name, phone, password, email, role
