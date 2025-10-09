@@ -9,6 +9,7 @@ const modelOrder = new schema({
     totalPrice:Number,
     status:String,
     address:String,
-    payment:String
+    payment:String,
+    name:String
 },{timestamps:true},{collection:"orders"})
 module.exports = mongoose.model('orders',modelOrder)

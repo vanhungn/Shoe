@@ -1,6 +1,8 @@
 const modelUser = require("../model/modelUsers")
+const modelOrder = require("../model/modelOrder")
 const bcrypt = require('bcrypt')
 const token = require("../helps/token")
+const cloudinary = require('cloudinary').v2;
 
 const Login = async (req, res) => {
     try {
@@ -165,10 +167,129 @@ const UpdateUser = async (req, res) => {
         })
     }
 }
+
+const GetOrder = async (req, res) => {
+    try {
+        const search = req.query.search || ""
+        const skip = req.query.skip || 1
+        const limit = req.query.limit || 10
+        const querys = {
+            $match: {
+                $or: [
+                    { name: { $regex: search, $options: "i" } }
+                ]
+            }
+
+        };
+        const order = await modelOrder.aggregate([querys,
+            { $skip: (skip - 1) * limit },
+            { $limit: limit }
+        ])
+
+        const lengthData = await modelOrder.aggregate([querys])
+        const total = Math.ceil(lengthData.length / limit)
+        return res.status(200).json({
+            data: order,
+            total
+        })
+    } catch (error) {
+        return res.status(500).json({
+            error
+        })
+    }
+}
+const GetDetailOrder = async (req, res) => {
+    try {
+        const { _id } = req.params
+        if (!_id) {
+            return res.status(400).json({
+                message: "Information is missing"
+            })
+        }
+        const detail = await modelOrder.findById(_id)
+        return res.status(200).json({
+            detail
+        })
+    } catch (error) {
+        return res.status(500).json({
+            error
+        })
+    }
+}
+const deleteOrder = async () => {
+    try {
+        const { _id } = params
+        if (!_id) {
+            return res.status(400).json({
+                message: "Information is missing"
+            })
+        }
+        const issue = await modelOrder.findByIdAndDelete({ _id })
+        if (!issue) {
+            return res.status(400).json({
+                message: 'Deleting issue failed',
+            });
+        }
+        return res.status(200).json({
+            message: "success"
+        })
+    } catch (error) {
+        return res.status(500).json({
+            error
+        })
+    }
+}
+const UpdateOrder = async (req, res) => {
+
+    try {
+        const { _id } = req.params
+        const files = req.files;
+        const { quantity, color, size, totalPrice, status, address, payment, name } = req.body
+        if (!quantity || !color || !size || !totalPrice || !status || !address || !payment || !name) {
+            return res.status(400).json({
+                message: "Information is missing"
+            })
+        }
+        cloudinary.config({
+            cloud_name: 'djybyg1o3',
+            api_key: '515998948284271',
+            api_secret: '53vkRUxGp4_JXSjQVIFfED6u-tk',
+            secure: true,
+        });
+        const order = await modelOrder.findById(_id)
+        if (files.img) {
+            const cloudinaryResponse = await cloudinary.uploader.upload(files.img[0].path);
+            if (cloudinaryResponse) {
+                order.img = cloudinaryResponse.secure_url;
+                console.log(cloudinaryResponse.secure_url)
+                order.save()
+            }
+        }
+        const update = await modelOrder.findByIdAndUpdate({ _id: _id },
+            {
+                quantity, color, size, totalPrice, status, address, payment, name
+            }, { new: true }
+        )
+        return res.status(200).json({
+            message: "success",
+            update
+        })
+    } catch (error) {
+        return res.status(500).json({
+            error
+        })
+    }
+}
 module.exports = {
     Login,
     GetUsers,
     CreateUser,
     DetailUser,
-    DeleteUser, UpdateUser
+    DeleteUser,
+    UpdateUser,
+    GetOrder,
+    GetDetailOrder,
+    deleteOrder,
+    UpdateOrder
+
 }
