@@ -216,9 +216,9 @@ const GetDetailOrder = async (req, res) => {
         })
     }
 }
-const deleteOrder = async () => {
+const deleteOrder = async (req, res) => {
     try {
-        const { _id } = params
+        const { _id } = req.params
         if (!_id) {
             return res.status(400).json({
                 message: "Information is missing"

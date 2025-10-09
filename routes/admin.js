@@ -28,5 +28,6 @@ router.put('/update/order/:_id', upload.fields([{ name: 'img' }]), admin.UpdateO
 router.post('/login', admin.Login)
 router.post('/update/user', admin.UpdateUser)
 router.delete('/delete/user/:id', admin.DeleteUser)
+router.delete('/delete/order/:_id',admin.deleteOrder)
 
 module.exports = router
