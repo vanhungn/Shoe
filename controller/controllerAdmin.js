@@ -225,11 +225,7 @@ const deleteOrder = async (req, res) => {
             })
         }
         const issue = await modelOrder.findByIdAndDelete({ _id })
-        if (!issue) {
-            return res.status(400).json({
-                message: 'Deleting issue failed',
-            });
-        }
+        
         return res.status(200).json({
             message: "success"
         })
