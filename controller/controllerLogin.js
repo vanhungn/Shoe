@@ -39,7 +39,6 @@ const LoginGoogle = async (req, res) => {
             accout = await modelUser.create({
                 name: name,
                 phone: "",
-                gender: "",
                 password: "",
                 googleId: sub,
                 email: email,
