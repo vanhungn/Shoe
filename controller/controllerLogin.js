@@ -42,7 +42,8 @@ const LoginGoogle = async (req, res) => {
                 gender: "",
                 password: "",
                 googleId: sub,
-                email: email
+                email: email,
+                role: "normal"
             })
         }
         return res.status(200).json({
