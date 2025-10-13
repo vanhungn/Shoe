@@ -26,8 +26,8 @@ const LoginGoogle = async (req, res) => {
         const payload = await verifyToken(token)
         const { email, name, sub } = payload;
         let accout = await modelUser.findOne({ googleId: sub });
-        const accessToken = await createToken({ email, name }, '15m', 'accessToken')
-        const refreshToken = await createToken({ email, name }, '1d', 'refreshToken')
+        const accessToken = await createToken({ email, name, role: "normal" }, '15m', 'accessToken')
+        const refreshToken = await createToken({ email, name, role: "normal" }, '1d', 'refreshToken')
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,  // 🔒 chặn JS truy cập cookie
             secure: true,    // 🔒 chỉ gửi qua HTTPS (khi deploy)
@@ -70,8 +70,8 @@ const Login = async (req, res) => {
                 message: 'Wrong password',
             });
         }
-        const newToken = await token({ id:users._id}, '15m', 'accessToken')
-         const refreshToken = await token({ id: users._id }, '7d', 'refreshToken');
+        const newToken = await token({ id: users._id, role: users.role }, '15m', 'accessToken')
+        const refreshToken = await token({ id: users._id, role: users.role }, '7d', 'refreshToken');
 
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,  // 🔒 chặn JS truy cập cookie
@@ -82,8 +82,8 @@ const Login = async (req, res) => {
         });
         return res.status(200).json({
             accessToken: newToken,
-            data: { name: users.name ,id:users._id}
-            
+            data: { name: users.name, id: users._id }
+
         })
     } catch (error) {
         return res.status(500).json({

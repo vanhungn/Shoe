@@ -24,8 +24,8 @@ const Login = async (req, res) => {
                 message: 'Wrong password',
             });
         }
-        const newToken = await token({ id: user._id }, '15m', 'accessToken')
-        const refreshToken = await token({ id: user._id }, '7d', 'refreshToken');
+        const newToken = await token({ id: user._id,role:user.role }, '15m', 'accessToken')
+        const refreshToken = await token({ id: user._id,role:user.role }, '7d', 'refreshToken');
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,  // 🔒 chặn JS truy cập cookie
             secure: true,    // 🔒 chỉ gửi qua HTTPS (khi deploy)
