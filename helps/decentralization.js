@@ -3,7 +3,7 @@ const CheckRole = async (req, res, next) => {
         const roles = req.user
 
         if (roles.role === "normal") {
-            return res.status(404).json({
+            return res.status(403).json({
                 message: "You are not an admin"
             })
         }
