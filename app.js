@@ -18,7 +18,7 @@ db();
 // 🌟 Bật CORS toàn cục ngay sau khởi tạo app
 
 app.use(cors({
-  origin: '*', // hoặc '*' nếu không dùng credentials
+  origin:[ 'http://localhost:5173',"https://cool-squirrel-249128.netlify.app"], // hoặc '*' nếu không dùng credentials
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
@@ -37,9 +37,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/products', productRouter)
-app.use('/orders', orderRouter)
-app.use('/admin', adminRouter)
+app.use('/products',productRouter)
+app.use('/orders',orderRouter)
+app.use('/admin',adminRouter)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
